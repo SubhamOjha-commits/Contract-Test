@@ -1,0 +1,271 @@
+{
+  "consumer": {
+    "name": "ProductConsumer"
+  },
+  "interactions": [
+    {
+      "comments": {
+        "testname": "com.sdet.pact.consumer.contracts.ProductConsumerPactTest.Should retrieve product with details",
+        "text": [
+
+        ]
+      },
+      "description": "A request to get product with details",
+      "key": "727b3911",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "Product with ID 1 exists"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/products/1",
+        "query": {
+          "includeDetails": [
+            "true"
+          ]
+        }
+      },
+      "response": {
+        "body": {
+          "content": {
+            "category": "Electronics",
+            "details": {
+              "manufacturer": "TechCorp",
+              "stock": 50,
+              "warranty": "2 years"
+            },
+            "id": 1,
+            "inStock": true,
+            "name": "Laptop",
+            "price": 999.99
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.category": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.details.manufacturer": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.details.stock": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.details.warranty": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.inStock": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.price": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "decimal"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "transport": "https",
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "comments": {
+        "testname": "com.sdet.pact.consumer.contracts.ProductConsumerPactTest.Should retrieve all products successfully",
+        "text": [
+
+        ]
+      },
+      "description": "A request to get all products",
+      "key": "d30f5072",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "Products exist in the system"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/products"
+      },
+      "response": {
+        "body": {
+          "content": [
+            {
+              "category": "Electronics",
+              "id": 1,
+              "inStock": true,
+              "name": "Laptop",
+              "price": 999.99
+            },
+            {
+              "category": "Accessories",
+              "id": 2,
+              "inStock": true,
+              "name": "Mouse",
+              "price": 29.99
+            }
+          ],
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$[0].category": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[0].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$[0].inStock": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[0].name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[0].price": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "decimal"
+                }
+              ]
+            },
+            "$[1].category": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[1].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$[1].inStock": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[1].name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[1].price": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "decimal"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "transport": "https",
+      "type": "Synchronous/HTTP"
+    }
+  ],
+  "metadata": {
+    "pact-jvm": {
+      "version": "4.6.5"
+    },
+    "pactSpecification": {
+      "version": "4.0"
+    }
+  },
+  "provider": {
+    "name": "ProductProvider"
+  }
+}

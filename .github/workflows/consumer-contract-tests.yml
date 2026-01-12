@@ -1,0 +1,116 @@
+name: Consumer Contract Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'consumer-service/**'
+      - '.github/workflows/consumer-contract-tests.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'consumer-service/**'
+
+jobs:
+  consumer-tests:
+    name: Run Consumer Contract Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Run Consumer Contract Tests
+        run: |
+          cd consumer-service
+          mvn clean test -Dtest=*ConsumerPactTest
+        env:
+          PACT_BROKER_URL: ${{ secrets.PACT_BROKER_URL || 'http://localhost:9292' }}
+
+      - name: Publish PACT files to Broker
+        if: success()
+        run: |
+          cd consumer-service
+          mvn pact:publish \
+            -Dpact.broker.url=${{ secrets.PACT_BROKER_URL || 'http://localhost:9292' }} \
+            -Dpact.consumer.version=${{ github.sha }} \
+            -Dpact.tag=${{ github.ref_name }}
+        continue-on-error: true
+
+      - name: Upload PACT files as artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: pact-contracts
+          path: consumer-service/target/pacts/*.json
+          retention-days: 30
+
+      - name: Generate Test Report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Consumer Contract Test Results
+          path: consumer-service/target/surefire-reports/*.xml
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Comment PR with PACT Summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const pactFiles = fs.readdirSync('consumer-service/target/pacts');
+            const summary = `### 📋 Consumer Contract Tests Summary
+            
+            ✅ Generated ${pactFiles.length} PACT contract(s):
+            ${pactFiles.map(f => `- ${f}`).join('\n')}
+            
+            🔗 View contracts in [Pact Broker](${{ secrets.PACT_BROKER_URL || 'http://localhost:9292' }})
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+
+  can-i-deploy:
+    name: Check Can-I-Deploy
+    needs: consumer-tests
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Pact CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/pact-foundation/pact-ruby-standalone/master/install.sh | bash
+          echo "$HOME/pact/bin" >> $GITHUB_PATH
+
+      - name: Can I Deploy?
+        run: |
+          pact-broker can-i-deploy \
+            --pacticipant UserConsumer \
+            --version ${{ github.sha }} \
+            --to-environment production \
+            --broker-base-url ${{ secrets.PACT_BROKER_URL || 'http://localhost:9292' }}
+        continue-on-error: true
+

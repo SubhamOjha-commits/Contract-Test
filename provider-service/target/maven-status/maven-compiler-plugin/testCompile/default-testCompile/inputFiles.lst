@@ -1,0 +1,4 @@
+/Users/subhamo/DemoProject/provider-service/src/test/java/com/sdet/pact/provider/verification/UserProviderPactTest.java
+/Users/subhamo/DemoProject/provider-service/src/test/java/com/sdet/pact/provider/verification/ProductProviderPactTest.java
+/Users/subhamo/DemoProject/provider-service/src/test/java/com/sdet/pact/provider/stubs/UserProviderStub.java
+/Users/subhamo/DemoProject/provider-service/src/test/java/com/sdet/pact/provider/stubs/ProductProviderStub.java

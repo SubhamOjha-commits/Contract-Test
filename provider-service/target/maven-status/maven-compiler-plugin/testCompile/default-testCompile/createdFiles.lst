@@ -1,0 +1,8 @@
+com/sdet/pact/provider/stubs/UserProviderStub$User.class
+com/sdet/pact/provider/verification/UserProviderPactTest.class
+com/sdet/pact/provider/stubs/ProductProviderStub$ProductDetails.class
+com/sdet/pact/provider/stubs/ProductProviderStub$Product.class
+com/sdet/pact/provider/stubs/UserProviderStub.class
+com/sdet/pact/provider/verification/ProductProviderPactTest.class
+com/sdet/pact/provider/stubs/ProductProviderStub$ProductWithDetails.class
+com/sdet/pact/provider/stubs/ProductProviderStub.class
